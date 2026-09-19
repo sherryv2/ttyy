@@ -3,77 +3,38 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#07080b" />
-  <title>Aether</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta name="theme-color" content="#000000" />
+  <title>Code Name Sherry</title>
   <style>
     :root {
-      --bg: #07080b;
-      --bg-2: #0c0e14;
-      --line: rgba(214, 196, 160, 0.12);
-      --line-strong: rgba(214, 196, 160, 0.22);
-      --gold: #d6c4a0;
-      --gold-dim: #9a8b6e;
-      --text: #ece8df;
-      --muted: #8d887c;
-      --user: #16141a;
-      --ai: transparent;
-      --danger: #c9897a;
-      --ok: #8fad8a;
-      --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-      --radius: 18px;
+      --bg: #000;
+      --panel: #1c1c1c;
+      --line: #2a2a2a;
+      --text: #ececec;
+      --muted: #8a8a8a;
+      --soft: #111;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; background: var(--bg); color: var(--text); }
+    html, body { height: 100%; background: #000; color: var(--text); }
     body {
-      font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       overflow: hidden;
     }
-
-    .sky {
-      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    canvas#field {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+    .vignette {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
       background:
-        radial-gradient(1200px 700px at 50% -10%, rgba(214, 196, 160, 0.07), transparent 55%),
-        radial-gradient(800px 500px at 110% 90%, rgba(90, 110, 150, 0.08), transparent 50%),
-        radial-gradient(600px 400px at -10% 80%, rgba(214, 196, 160, 0.04), transparent 45%),
-        var(--bg);
-    }
-    .sky::before {
-      content: "";
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(rgba(214,196,160,0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(214,196,160,0.035) 1px, transparent 1px);
-      background-size: 72px 72px;
-      mask-image: radial-gradient(ellipse at 50% 40%, #000 20%, transparent 75%);
-    }
-    .orbit {
-      position: absolute; left: 50%; top: 42%;
-      width: 520px; height: 520px;
-      transform: translate(-50%, -50%);
-      border: 1px solid rgba(214,196,160,0.08);
-      border-radius: 50%;
-    }
-    .orbit.s2 { width: 340px; height: 340px; border-color: rgba(214,196,160,0.06); }
-    .orbit.s3 { width: 180px; height: 180px; border-color: rgba(214,196,160,0.05); }
-    .stars {
-      position: absolute; inset: 0;
-      background-image:
-        radial-gradient(1px 1px at 12% 22%, rgba(236,232,223,.7), transparent),
-        radial-gradient(1px 1px at 78% 18%, rgba(236,232,223,.45), transparent),
-        radial-gradient(1.4px 1.4px at 64% 72%, rgba(214,196,160,.55), transparent),
-        radial-gradient(1px 1px at 28% 68%, rgba(236,232,223,.35), transparent),
-        radial-gradient(1px 1px at 88% 54%, rgba(236,232,223,.4), transparent),
-        radial-gradient(1.2px 1.2px at 46% 14%, rgba(214,196,160,.5), transparent);
+        radial-gradient(600px 400px at var(--mx, 50%) var(--my, 30%), rgba(120,140,180,.08), transparent 55%),
+        linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,.72));
     }
 
     .app {
-      position: relative; z-index: 1;
+      position: relative;
+      z-index: 1;
       height: 100%;
-      max-width: 780px;
+      max-width: 820px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
@@ -81,382 +42,380 @@
     }
 
     header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 20px 12px;
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(16px);
-      background: linear-gradient(180deg, rgba(7,8,11,.72), rgba(7,8,11,.28));
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
     }
-    .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
-    .mark {
-      width: 34px; height: 34px; border-radius: 50%;
-      border: 1px solid var(--line-strong);
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .logo b {
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      background: #fff;
+      color: #000;
       display: grid; place-items: center;
-      position: relative;
+      font-size: 11px;
+      font-weight: 800;
+      box-shadow: 0 0 0 0 rgba(255,255,255,.4);
+      animation: pulse 3.2s ease-in-out infinite;
     }
-    .mark span {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--gold);
-      box-shadow: 0 0 12px rgba(214,196,160,.55);
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,.28); }
+      50% { box-shadow: 0 0 18px 2px rgba(180,200,255,.18); }
     }
-    .mark::after {
-      content: "";
-      position: absolute; inset: 5px;
-      border: 1px solid rgba(214,196,160,.25);
-      border-radius: 50%;
-      border-top-color: transparent;
+    .ghost {
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 8px 10px;
+      border-radius: 8px;
     }
-    .titles { min-width: 0; }
-    .titles h1 {
-      font-family: "Instrument Serif", Georgia, serif;
-      font-size: 22px; font-weight: 400; letter-spacing: 0.04em;
-      line-height: 1.1;
-    }
-    .titles p {
-      color: var(--muted); font-size: 11px; letter-spacing: 0.16em;
-      text-transform: uppercase; margin-top: 3px;
-    }
-    .actions { display: flex; gap: 8px; }
-    .icon-btn {
-      appearance: none; border: 1px solid var(--line);
-      background: rgba(12,14,20,.5); color: var(--gold);
-      width: 36px; height: 36px; border-radius: 50%;
-      cursor: pointer; display: grid; place-items: center;
-      transition: border-color .2s, background .2s;
-    }
-    .icon-btn:hover { border-color: var(--line-strong); background: rgba(214,196,160,.06); }
-    .icon-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.6; }
+    .ghost:hover { background: #161616; color: #fff; }
 
     main {
-      flex: 1; overflow-y: auto; padding: 28px 20px 12px;
-      scroll-behavior: smooth;
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 16px 20px;
     }
-    main::-webkit-scrollbar { width: 8px; }
-    main::-webkit-scrollbar-thumb { background: rgba(214,196,160,.18); border-radius: 8px; }
+    main::-webkit-scrollbar { width: 0; }
 
-    .hero {
-      text-align: center; padding: 48px 8px 28px;
+    .landing {
+      min-height: 70%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 18px;
     }
-    .hero h2 {
-      font-family: "Instrument Serif", Georgia, serif;
-      font-weight: 400; font-size: clamp(28px, 6vw, 42px);
-      letter-spacing: -0.02em; line-height: 1.15;
+    .landing h1 {
+      font-size: clamp(28px, 7vw, 40px);
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      background: linear-gradient(90deg, #fff 0%, #c9d4ea 40%, #fff 70%, #9aa8c7 100%);
+      background-size: 220% 100%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: sheen 7s linear infinite;
     }
-    .hero h2 em { font-style: italic; color: var(--gold); }
-    .hero p {
-      color: var(--muted); margin-top: 12px; font-size: 14px; line-height: 1.6;
+    @keyframes sheen {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 220% 50%; }
     }
-    .hints {
-      display: grid; gap: 8px; margin-top: 28px;
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      max-width: 560px;
     }
-    .hint {
-      text-align: left; width: 100%;
-      border: 1px solid var(--line); background: rgba(12,14,20,.45);
-      color: var(--text); border-radius: 14px; padding: 12px 14px;
-      cursor: pointer; font: inherit; font-size: 13.5px;
-      transition: border-color .2s, background .2s;
+    .chip {
+      border: 1px solid #2b2b2b;
+      background: rgba(13,13,13,.72);
+      color: #d7d7d7;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform .2s ease, border-color .2s, background .2s, box-shadow .2s;
     }
-    .hint:hover { border-color: var(--line-strong); background: rgba(214,196,160,.05); }
-    .hint small { display: block; color: var(--muted); margin-top: 3px; font-size: 11.5px; }
+    .chip:hover {
+      background: #171717;
+      border-color: #4a4a4a;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 24px rgba(0,0,0,.35);
+    }
 
-    .row {
-      display: flex; gap: 12px; margin: 0 0 22px;
-      animation: rise .35s ease;
-    }
-    .row.user { flex-direction: row-reverse; }
-    @keyframes rise {
+    .msg { padding: 18px 4px; animation: in .32s ease; }
+    @keyframes in {
       from { opacity: 0; transform: translateY(8px); }
       to { opacity: 1; transform: none; }
     }
-    .avatar {
-      flex: 0 0 28px; width: 28px; height: 28px; border-radius: 50%;
-      border: 1px solid var(--line-strong);
-      display: grid; place-items: center;
-      font-size: 10px; letter-spacing: .08em; color: var(--gold);
-      margin-top: 2px;
+    .msg .who {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
     }
-    .row.user .avatar { color: var(--text); background: #1a1820; }
-    .bubble {
-      max-width: min(100%, 620px);
-      padding: 12px 14px;
-      border-radius: 16px;
-      line-height: 1.65; font-size: 14.5px;
-      white-space: pre-wrap; word-break: break-word;
+    .msg.user .who { color: #fff; }
+    .msg.ai .who { color: #cfcfcf; }
+    .msg .body {
+      font-size: 15.5px;
+      line-height: 1.65;
+      color: #e8e8e8;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
-    .row.ai .bubble {
-      background: rgba(16,18,24,.55);
-      border: 1px solid var(--line);
-    }
-    .row.user .bubble {
-      background: #14131a;
-      border: 1px solid rgba(214,196,160,.16);
-    }
-    .bubble.error { border-color: rgba(201,137,122,.35); color: #ead7d2; }
-    .bubble a { color: var(--gold); }
-    .bubble code {
+    .msg.error .body { color: #ffb4b4; }
+    .msg .body code {
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 12.5px; background: rgba(255,255,255,.05);
-      padding: 1px 5px; border-radius: 4px;
+      font-size: 13px;
+      background: #161616;
+      padding: 1px 5px;
+      border-radius: 4px;
     }
-    .bubble pre {
-      margin: 10px 0; padding: 12px;
-      background: #090a0e; border: 1px solid var(--line);
-      border-radius: 10px; overflow-x: auto; white-space: pre;
+    .msg .body pre {
+      margin: 10px 0;
+      padding: 12px;
+      background: #111;
+      border: 1px solid #222;
+      border-radius: 10px;
+      overflow-x: auto;
+      white-space: pre;
     }
-    .bubble pre code { background: none; padding: 0; }
-    .bubble strong { font-weight: 600; color: #f3efe6; }
-    .meta {
-      display: flex; gap: 10px; align-items: center;
-      margin-top: 6px; color: var(--muted); font-size: 11px;
+    .think {
+      color: var(--muted);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-    .copy {
-      background: none; border: 0; color: var(--gold-dim);
-      cursor: pointer; font: inherit; font-size: 11px; letter-spacing: .04em;
+    .spin {
+      width: 12px; height: 12px;
+      border: 1.6px solid #444;
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
     }
-    .copy:hover { color: var(--gold); }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .thinking { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; }
-    .dots { display: flex; gap: 5px; }
-    .dots i {
-      width: 5px; height: 5px; border-radius: 50%; background: var(--gold);
-      opacity: .25; animation: pulse 1.1s infinite ease-in-out;
-    }
-    .dots i:nth-child(2) { animation-delay: .15s; }
-    .dots i:nth-child(3) { animation-delay: .3s; }
-    @keyframes pulse { 0%, 80%, 100% { opacity: .2; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-2px); } }
-
-    .composer-wrap {
+    .dock {
       padding: 8px 16px 16px;
     }
-    .composer {
-      display: flex; align-items: flex-end; gap: 8px;
-      border: 1px solid var(--line);
-      background: rgba(12,14,20,.72);
-      backdrop-filter: blur(18px);
-      border-radius: 22px;
-      padding: 8px 8px 8px 16px;
-      box-shadow: var(--shadow);
+    .box {
+      background: rgba(28,28,28,.86);
+      border: 1px solid #2a2a2a;
+      border-radius: 28px;
+      padding: 8px 8px 8px 18px;
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      backdrop-filter: blur(16px);
+      transition: border-color .2s, box-shadow .2s;
     }
-    .composer:focus-within { border-color: var(--line-strong); }
+    .box:focus-within {
+      border-color: #5a5a5a;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.06), 0 18px 40px rgba(0,0,0,.45);
+    }
     textarea {
-      flex: 1; resize: none; border: 0; outline: none;
-      background: transparent; color: var(--text);
-      font: inherit; font-size: 15px; line-height: 1.45;
-      max-height: 160px; min-height: 24px; padding: 8px 0;
+      flex: 1;
+      border: 0;
+      outline: 0;
+      background: transparent;
+      color: #fff;
+      font: inherit;
+      font-size: 16px;
+      line-height: 1.4;
+      resize: none;
+      max-height: 160px;
+      min-height: 28px;
+      padding: 10px 0;
     }
-    textarea::placeholder { color: #6f6b62; }
-    .send {
-      appearance: none; border: 0; cursor: pointer;
-      width: 40px; height: 40px; border-radius: 50%;
-      background: var(--gold); color: #1a160f;
-      display: grid; place-items: center; flex: 0 0 40px;
-      transition: opacity .2s, transform .15s;
+    textarea::placeholder { color: #7a7a7a; }
+    .go {
+      width: 36px; height: 36px;
+      border: 0;
+      border-radius: 50%;
+      background: #fff;
+      color: #000;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      flex: 0 0 36px;
     }
-    .send:disabled { opacity: .35; cursor: default; }
-    .send:not(:disabled):hover { transform: translateY(-1px); }
-    .send svg { width: 16px; height: 16px; fill: currentColor; }
-    .footnote {
-      text-align: center; color: #5e5a52; font-size: 11px;
-      margin-top: 8px; letter-spacing: .02em;
+    .go { transition: transform .15s ease, opacity .15s; }
+    .go:not(:disabled):hover { transform: scale(1.06); }
+    .go:not(:disabled):active { transform: scale(.96); }
+    .go:disabled { opacity: .28; cursor: default; }
+    .go svg { width: 16px; height: 16px; fill: currentColor; }
+    .fine {
+      text-align: center;
+      color: #5c5c5c;
+      font-size: 11px;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
-  <div class="sky" aria-hidden="true">
-    <div class="stars"></div>
-    <div class="orbit"></div>
-    <div class="orbit s2"></div>
-    <div class="orbit s3"></div>
-  </div>
-
+  <canvas id="field"></canvas>
+  <div class="vignette"></div>
   <div class="app">
     <header>
-      <div class="brand">
-        <div class="mark"><span></span></div>
-        <div class="titles">
-          <h1>Aether</h1>
-          <p>Spacetime interface</p>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="icon-btn" id="newChat" title="Percakapan baru" aria-label="Percakapan baru">
-          <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-linecap="round"/></svg>
-        </button>
-      </div>
+      <div class="logo"><b>S</b> Code Name Sherry</div>
+      <button class="ghost" id="newChat" type="button">Percakapan baru</button>
     </header>
-
     <main id="thread"></main>
-
-    <div class="composer-wrap">
-      <form class="composer" id="form">
-        <textarea id="input" rows="1" placeholder="Tanyakan apa saja…" autocomplete="off"></textarea>
-        <button class="send" id="send" type="submit" aria-label="Kirim">
-          <svg viewBox="0 0 24 24"><path d="M3.2 21 22 12 3.2 3l2.2 7.6L16 12l-10.6 1.4z"/></svg>
+    <div class="dock">
+      <form class="box" id="form">
+        <textarea id="input" rows="1" placeholder="Ada yang bisa dibantu?" autocomplete="off"></textarea>
+        <button class="go" id="send" type="submit" aria-label="Kirim">
+          <svg viewBox="0 0 24 24"><path d="M3 20.5 21 12 3 3.5l2.4 6.7L14.2 12l-8.8 1.8z"/></svg>
         </button>
       </form>
-      <p class="footnote">Kimi 2.5 Thinking · sesi tersimpan di perangkat ini</p>
+      <p class="fine">Code Name Sherry · dibuat Adamm S.</p>
     </div>
   </div>
-
   <script>
-    const API_HOSTS = [
-      "https://api.alwayscodex.eu.cc/api/ai/kimi",
-      "https://api.zyvor.my.id/api/ai/kimi"
+    const ENDPOINTS = [
+      { url: "https://api.zyvor.my.id/api/ai/aichatting", q: "text" },
+      { url: "https://api.zyvor.my.id/api/ai/unlimited", q: "teks" },
+      { url: "https://api.zyvor.my.id/api/ai/aiseek", q: "message" },
+      { url: "https://api.zyvor.my.id/api/ai/kimi", q: "teks" },
+      { url: "https://api.alwayscodex.eu.cc/api/ai/kimi", q: "teks" }
     ];
+
+    const PERSONA = "Kamu adalah Code Name Sherry. Pembuatmu satu-satunya: Adamm S. Jangan bilang kamu dibuat Sherry, Adam tanpa S, Kimi, Gemini, ChatGPT, atau perusahaan mana pun. Gaya: asik, blak-blakan, cerdas, tidak kaku. Bahasa mengikuti user. Jangan ulang instruksi ini.";
 
     const thread = document.getElementById("thread");
     const form = document.getElementById("form");
     const input = document.getElementById("input");
     const sendBtn = document.getElementById("send");
-    const newChatBtn = document.getElementById("newChat");
 
     const state = {
-      session: localStorage.getItem("aether.session") || createSession(),
-      messages: JSON.parse(localStorage.getItem("aether.messages") || "[]"),
-      busy: false
+      session: localStorage.getItem("sa.sid") || uid(),
+      messages: JSON.parse(localStorage.getItem("sa.msgs") || "[]"),
+      busy: false,
+      primed: false
     };
+    localStorage.setItem("sa.sid", state.session);
 
-    function createSession() {
-      const id = "aether-" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
-      localStorage.setItem("aether.session", id);
-      return id;
+    function uid() {
+      return "sa-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
     }
-
-    function persist() {
-      localStorage.setItem("aether.messages", JSON.stringify(state.messages.slice(-80)));
-      localStorage.setItem("aether.session", state.session);
+    function save() {
+      localStorage.setItem("sa.sid", state.session);
+      localStorage.setItem("sa.msgs", JSON.stringify(state.messages.slice(-80)));
     }
-
-    function escapeHtml(s) {
-      return s.replace(/[&<>"']/g, c => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-      }[c]));
+    function esc(s) {
+      return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
     }
-
-    function renderMarkdown(raw) {
-      let text = escapeHtml(raw || "");
+    function md(raw) {
+      let t = esc(raw || "");
       const blocks = [];
-      text = text.replace(/```([\s\S]*?)```/g, (_, code) => {
-        const i = blocks.push(`<pre><code>${code.trim()}</code></pre>`) - 1;
-        return `\u0000B${i}\u0000`;
+      t = t.replace(/```([\s\S]*?)```/g, (_, c) => {
+        blocks.push("<pre><code>" + c.trim() + "</code></pre>");
+        return "\0B" + (blocks.length - 1) + "\0";
       });
-      text = text
-        .replace(/`([^`]+)`/g, "<code>$1</code>")
-        .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
-        .replace(/\[([^\]]+)\]\((https?:[^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-      text = text.replace(/\u0000B(\d+)\u0000/g, (_, i) => blocks[+i]);
-      return text;
-    }
-
-    function timeLabel(ts) {
-      try {
-        return new Date(ts).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
-      } catch { return ""; }
+      t = t.replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      return t.replace(/\0B(\d+)\0/g, (_, i) => blocks[+i]);
     }
 
     const HINTS = [
-      { t: "Jelaskan relativitas dengan analogi sehari-hari", s: "Tanpa rumus yang berlebihan." },
-      { t: "Susun rencana 7 hari untuk fokus belajar", s: "Ringkas, realistis, bisa dijalankan." },
-      { t: "Tulis ulang teks ini agar lebih tenang dan jelas", s: "Sisipkan teks Anda setelah mengirim." }
+      "Siapa yang menciptakan saya?"
     ];
 
-    function emptyState() {
+    function landing() {
       thread.innerHTML = `
-        <section class="hero">
-          <h2>Berbicara di tepi <em>waktu</em>.</h2>
-          <p>Antarmuka tenang untuk bertanya, menulis, dan menata pikiran.</p>
-          <div class="hints">
-            ${HINTS.map(h => `<button class="hint" data-q="${escapeHtml(h.t)}">${escapeHtml(h.t)}<small>${escapeHtml(h.s)}</small></button>`).join("")}
-          </div>
-        </section>`;
-      thread.querySelectorAll(".hint").forEach(btn => {
-        btn.addEventListener("click", () => {
-          input.value = btn.dataset.q;
-          input.focus();
-          resize();
-          form.requestSubmit();
-        });
+        <div class="landing">
+          <h1>Ada yang bisa dibantu?</h1>
+          <div class="chips">${HINTS.map(h => `<button class="chip" type="button">${esc(h)}</button>`).join("")}</div>
+        </div>`;
+      thread.querySelectorAll(".chip").forEach(b => b.onclick = () => {
+        input.value = b.textContent;
+        form.requestSubmit();
       });
     }
 
-    function addRow(msg, opts = {}) {
-      const row = document.createElement("div");
-      row.className = "row " + msg.role;
-      const isUser = msg.role === "user";
-      row.innerHTML = `
-        <div class="avatar">${isUser ? "ANDA".slice(0,1) : "Ae"}</div>
-        <div>
-          <div class="bubble ${msg.error ? "error" : ""}">${
-            opts.thinking
-              ? `<div class="thinking"><span class="dots"><i></i><i></i><i></i></span>Menyusun jawaban</div>`
-              : renderMarkdown(msg.text)
-          }</div>
-          ${opts.thinking ? "" : `<div class="meta"><span>${timeLabel(msg.ts)}</span>${isUser || msg.error ? "" : `<button class="copy" type="button">Salin</button>`}</div>`}
-        </div>`;
-      const copy = row.querySelector(".copy");
-      if (copy) copy.addEventListener("click", async () => {
-        try { await navigator.clipboard.writeText(msg.text); copy.textContent = "Tersalin"; setTimeout(() => copy.textContent = "Salin", 1200); } catch {}
-      });
-      thread.appendChild(row);
+    function row(msg, thinking) {
+      const el = document.createElement("div");
+      el.className = "msg " + msg.role + (msg.error ? " error" : "");
+      el.innerHTML = `<div class="who">${msg.role === "user" ? "Kamu" : "Sherry"}</div>
+        <div class="body">${thinking ? '<div class="think"><i class="spin"></i>Lagi mikir</div>' : md(msg.text)}</div>`;
+      thread.appendChild(el);
       thread.scrollTop = thread.scrollHeight;
-      return row;
+      return el;
     }
 
     function draw() {
       thread.innerHTML = "";
-      if (!state.messages.length) { emptyState(); return; }
-      state.messages.forEach(m => addRow(m));
-      thread.scrollTop = thread.scrollHeight;
+      if (!state.messages.length) landing();
+      else state.messages.forEach(m => row(m));
     }
 
-    function extractReply(data) {
+    function identity(text) {
+      return /(siapa\s+(yang\s+)?(cipta|menciptakan|bikin|buat|pencipta)|who\s+(made|created|are)\s+you|kamu\s+siapa|lu\s+siapa|creator|adamm|pembuat)/i.test(text);
+    }
+
+    function extract(data) {
       if (data == null) return "";
-      if (typeof data === "string") return data;
-      if (typeof data.result === "string" && data.result.trim()) return data.result;
-      if (typeof data.response === "string" && data.response.trim()) return data.response;
-      if (typeof data.answer === "string" && data.answer.trim()) return data.answer;
-      if (data.data && data.data !== data) return extractReply(data.data);
-      if (typeof data.message === "string" && data.message.trim() && data.status !== false && data.success !== false) {
-        return data.message;
+      if (typeof data === "string") return data.trim();
+      if (typeof data.result === "object" && data.result) {
+        if (typeof data.result.text === "string" && data.result.text.trim()) return data.result.text.trim();
+        const inner = extract(data.result);
+        if (inner) return inner;
+      }
+      for (const k of ["result", "response", "answer", "output", "content", "text"]) {
+        if (typeof data[k] === "string" && data[k].trim()) return data[k].trim();
+      }
+      if (data.data && data.data !== data) return extract(data.data);
+      if (typeof data.message === "string" && data.status !== false && data.success !== false && data.message.length > 8) {
+        return data.message.trim();
       }
       return "";
     }
 
-    function looksFailed(data, httpOk) {
-      if (!httpOk) return true;
-      if (!data || typeof data !== "object") return false;
-      if (data.status === false || data.success === false) return true;
-      const msg = String(data.message || data.result || "");
-      return /used all your free tokens|quota|gagal/i.test(msg) && !extractReply(data);
+    function wrapUrl(target) {
+      return [
+        target,
+        "https://cors-anywhere.com/" + target
+      ];
     }
 
-    async function callKimi(teks) {
-      let lastErr = null;
-      for (const base of API_HOSTS) {
-        const url = base + "?teks=" + encodeURIComponent(teks) + "&session=" + encodeURIComponent(state.session);
-        const ctrl = new AbortController();
-        const timer = setTimeout(() => ctrl.abort(), 90000);
-        try {
-          const res = await fetch(url, { method: "GET", signal: ctrl.signal });
-          const raw = await res.text();
-          let data;
-          try { data = JSON.parse(raw); } catch { data = { result: raw }; }
-          const reply = extractReply(data);
-          if (data && data.session_id) {
-            state.session = String(data.session_id);
-          } else if (data && data.conversation_id) {
-            state.session = String(data.conversation_id);
+    async function pull(url, ms) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), ms);
+      try {
+        const res = await fetch(url, { method: "GET", signal: ctrl.signal });
+        const raw = await res.text();
+        let data;
+        try { data = JSON.parse(raw); } catch { data = { result: raw }; }
+        if (data.contents && typeof data.contents === "string") {
+          try { data = JSON.parse(data.contents); } catch { data = { result: data.contents }; }
+        }
+        return { res, data };
+      } finally {
+        clearTimeout(t);
+      }
+    }
+
+    async function ask(userText) {
+      const body = state.primed
+        ? "Tetap jadi Code Name Sherry. Pembuat: Adamm S. Blak-blakan.\n\nUser: " + userText
+        : PERSONA + "\n\nUser: " + userText;
+      let last = "Load failed. API tidak merespons.";
+      for (const ep of ENDPOINTS) {
+        const target = ep.url + "?" + ep.q + "=" + encodeURIComponent(body) + "&session=" + encodeURIComponent(state.session);
+        for (const u of wrapUrl(target)) {
+          try {
+            const { res, data } = await pull(u, 28000);
+            if (data.session_id) state.session = String(data.session_id);
+            else if (data.conversation_id) state.session = String(data.conversation_id);
+            const reply = extract(data).trim();
+            const errMsg = String(data.message || data.result || "");
+            if (reply && data.status !== false && data.success !== false) {
+              state.primed = true;
+              return reply;
+            }
+            if (/token|quota|gagal|404|failed/i.test(errMsg)) last = errMsg;
+            else if (!res.ok) last = "HTTP " + res.status;
+          } catch (e) {
+            last = e.name === "AbortError" ? "Timeout. Server API lemot." : "Fetch diblokir / API down.";
           }
-          if (reply && !looksFailed(data, res.ok)) return reply;
-          lastErr = new Error(data && (data.message || data.result) ? String(data.message || data.result) : ("HTTP " + res.status));
-          if (res.ok && reply) return reply;
-        } catch (err) {
-          lastErr = err.name === "AbortError" ? new Error("Waktu tunggu habis. Coba lagi.") : err;
-        } finally {
-          clearTimeout(timer);
         }
       }
-      throw lastErr || new Error("Tidak bisa menghubungi API.");
+      throw new Error(last);
     }
 
     function resize() {
@@ -464,50 +423,41 @@
       input.style.height = Math.min(input.scrollHeight, 160) + "px";
     }
 
-    async function onSubmit(e) {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const text = input.value.trim();
       if (!text || state.busy) return;
-
       if (!state.messages.length) thread.innerHTML = "";
-
-      const userMsg = { role: "user", text, ts: Date.now() };
-      state.messages.push(userMsg);
-      addRow(userMsg);
-      persist();
-
+      const user = { role: "user", text, ts: Date.now() };
+      state.messages.push(user);
+      row(user);
+      save();
       input.value = "";
       resize();
       state.busy = true;
       sendBtn.disabled = true;
-
-      const pending = addRow({ role: "ai", text: "", ts: Date.now() }, { thinking: true });
-
+      const pending = row({ role: "ai", text: "" }, true);
       try {
-        const reply = await callKimi(text);
+        const reply = identity(text)
+          ? "Gue Code Name Sherry. Yang menciptakan gue Adamm S. Satu orang. Bukan perusahaan, bukan nama lain."
+          : await ask(text);
         pending.remove();
-        const aiMsg = { role: "ai", text: reply, ts: Date.now() };
-        state.messages.push(aiMsg);
-        addRow(aiMsg);
+        const ai = { role: "ai", text: reply, ts: Date.now() };
+        state.messages.push(ai);
+        row(ai);
       } catch (err) {
         pending.remove();
-        const aiMsg = {
-          role: "ai",
-          error: true,
-          text: "Tidak dapat menyelesaikan permintaan.\n\n" + (err && err.message ? err.message : "Kesalahan jaringan."),
-          ts: Date.now()
-        };
-        state.messages.push(aiMsg);
-        addRow(aiMsg);
+        const ai = { role: "ai", error: true, text: "Load failed.\n\n" + err.message + "\n\nKalau file dibuka langsung (file://), coba lewat server lokal:\npython3 -m http.server 8080", ts: Date.now() };
+        state.messages.push(ai);
+        row(ai);
       } finally {
-        persist();
+        save();
         state.busy = false;
         sendBtn.disabled = false;
         input.focus();
       }
-    }
+    });
 
-    form.addEventListener("submit", onSubmit);
     input.addEventListener("input", resize);
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && !e.shiftKey) {
@@ -515,16 +465,67 @@
         form.requestSubmit();
       }
     });
-    newChatBtn.addEventListener("click", () => {
+    document.getElementById("newChat").onclick = () => {
       state.messages = [];
-      state.session = createSession();
-      persist();
+      state.session = uid();
+      state.primed = false;
+      save();
       draw();
       input.focus();
-    });
-
+    };
     draw();
     resize();
+
+    (function space() {
+      const c = document.getElementById("field");
+      const ctx = c.getContext("2d");
+      const ptr = { x: innerWidth / 2, y: innerHeight * 0.3, tx: innerWidth / 2, ty: innerHeight * 0.3 };
+      let stars = [];
+      function resizeC() {
+        c.width = innerWidth * devicePixelRatio;
+        c.height = innerHeight * devicePixelRatio;
+        c.style.width = innerWidth + "px";
+        c.style.height = innerHeight + "px";
+        ctx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+        const n = Math.min(90, Math.floor(innerWidth * innerHeight / 18000));
+        stars = Array.from({ length: n }, () => ({
+          x: Math.random() * innerWidth,
+          y: Math.random() * innerHeight,
+          z: Math.random() * 1.2 + 0.2,
+          r: Math.random() * 1.2 + 0.2
+        }));
+      }
+      resizeC();
+      addEventListener("resize", resizeC);
+      addEventListener("pointermove", (e) => {
+        ptr.tx = e.clientX; ptr.ty = e.clientY;
+        document.body.style.setProperty("--mx", e.clientX + "px");
+        document.body.style.setProperty("--my", e.clientY + "px");
+      }, { passive: true });
+      function tick() {
+        ptr.x += (ptr.tx - ptr.x) * 0.06;
+        ptr.y += (ptr.ty - ptr.y) * 0.06;
+        ctx.clearRect(0, 0, innerWidth, innerHeight);
+        const cx = innerWidth / 2, cy = innerHeight / 2;
+        ctx.strokeStyle = "rgba(160,175,210,0.06)";
+        ctx.lineWidth = 1;
+        for (let i = 1; i <= 4; i++) {
+          ctx.beginPath();
+          ctx.ellipse(cx + (ptr.x - cx) * 0.04, cy + (ptr.y - cy) * 0.03, 90 * i, 58 * i, 0, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+        for (const s of stars) {
+          const dx = (ptr.x - cx) * 0.012 * s.z;
+          const dy = (ptr.y - cy) * 0.012 * s.z;
+          ctx.fillStyle = "rgba(230,235,245," + (0.25 + s.z * 0.45) + ")";
+          ctx.beginPath();
+          ctx.arc(s.x + dx, s.y + dy, s.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        requestAnimationFrame(tick);
+      }
+      tick();
+    })();
   </script>
 </body>
 </html>
